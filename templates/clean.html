@@ -1,0 +1,76 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>Clean Data</title>  
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_clean.css') }}">  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">  
+</head>  
+<body>  
+    <div class="container">  
+        <h2>Cleaned Data</h2>  
+        <div class="action-buttons">  
+            <a href="{{ url_for('index') }}" class="btn" id="homeBtn">Quay về trang chủ</a> 
+            <button id="cleanBtn" class="btn">Clean</button>  
+            <a href="#" id="downloadBtn" class="btn" style="display: none;">Download</a>  
+        </div>  
+        <div id="tableContainer" style="display: none;">  
+            <table>
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table_data %}
+                        <tr>
+                            {% for cell in row.values() %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>   
+     
+        
+    <script>  
+        document.getElementById('cleanBtn').addEventListener('click', function() {  
+            document.getElementById('tableContainer').style.display = 'block';  
+            document.getElementById('downloadBtn').style.display = 'inline-block';  
+        });  
+
+        function attachPaginationListeners() {  
+            var paginationLinks = document.querySelectorAll('.pagination a:not(.disabled)');  
+
+            paginationLinks.forEach(function(link) {  
+                link.addEventListener('click', function(event) {  
+                    event.preventDefault(); // Ngăn hành động mặc định  
+                    var url = new URL(this.href);  
+                    var page = url.searchParams.get('page');  
+                    fetchData(page);  
+                });  
+            });  
+        }  
+
+        function fetchData(page) {  
+            fetch(`{{ url_for('clean_data') }}?page=${page}`)  
+                .then(response => response.text())  
+                .then(data => {  
+                    document.getElementById('tableContainer').innerHTML = data;  
+                    attachPaginationListeners(); // Gắn lại các lắng nghe sau khi lấy nội dung mới  
+                })  
+                .catch(error => console.error('Error fetching data:', error)); // Log lỗi nếu cái fetch thất bại  
+        }   
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {  
+            window.location.href = "{{ url_for('download_clean_data') }}";  
+        });  
+
+        // Gọi hàm gắn các listener phân trang khi trang lần đầu được tải  
+        attachPaginationListeners();  
+    </script>  
+       
+</body>  
+</html>

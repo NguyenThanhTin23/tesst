@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Table</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <div class="menu" id="menu">
+        <a href="javascript:void(0);" class="close-btn" onclick="toggleMenu()">✕</a>
+        <a href="{{ url_for('add_data') }}">Thêm Dữ Liệu</a>
+        <a href="{{ url_for('edit_data') }}">Sửa Dữ Liệu</a>
+        <a href="{{ url_for('delete_data') }}">Xóa Dữ Liệu</a>
+        <a href="{{ url_for('clean_data') }}">Làm Sạch Dữ Liệu</a>
+        <a href="{{ url_for('statistics') }}">Thống Kê</a>
+        <a href="{{ url_for('chart') }}">Vẽ Biểu Đồ</a>
+    </div>
+
+    <h2>CSV Data Table</h2>
+    <table>
+        <thead>
+            <tr>
+                {% for header in headers %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data %}
+                <tr>
+                    {% for cell in row.values() %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('index', page=1) }}">First Page</a>
+        {% else %}
+            <a class="disabled">First Page</a>
+        {% endif %}
+
+        {% if has_prev %}
+            <a href="{{ url_for('index', page=page-1) }}">Previous</a>
+        {% else %}
+            <a class="disabled">Previous</a>
+        {% endif %}
+
+        {% for p in nearby_pages %}
+            {% if p == page %}
+                <a class="disabled">{{ p }}</a>
+            {% else %}
+                <a href="{{ url_for('index', page=p) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if has_next %}
+            <a href="{{ url_for('index', page=page+1) }}">Next</a>
+            <a href="{{ url_for('index', page=total_pages) }}">Last Page</a>
+        {% else %}
+            <a class="disabled">Next</a>
+            <a class="disabled">Last Page</a>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+</html>
